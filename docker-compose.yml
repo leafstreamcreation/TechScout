@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # PostgreSQL for News Fetcher Service
+  newsdb:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: newsdb
+      POSTGRES_USER: news_user
+      POSTGRES_PASSWORD: news_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - news_data:/var/lib/postgresql/data
+    networks:
+      - news-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U news_user -d newsdb"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL for Voting Service
+  votedb:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: votedb
+      POSTGRES_USER: vote_user
+      POSTGRES_PASSWORD: vote_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - vote_data:/var/lib/postgresql/data
+    networks:
+      - news-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vote_user -d votedb"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # News Fetcher Service
+  news-fetcher:
+    build:
+      context: ./news-fetcher-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://newsdb:5432/newsdb
+      SPRING_DATASOURCE_USERNAME: news_user
+      SPRING_DATASOURCE_PASSWORD: news_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+    depends_on:
+      newsdb:
+        condition: service_healthy
+    networks:
+      - news-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Voting Service
+  voting-service:
+    build:
+      context: ./voting-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://votedb:5432/votedb
+      SPRING_DATASOURCE_USERNAME: vote_user
+      SPRING_DATASOURCE_PASSWORD: vote_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+    depends_on:
+      votedb:
+        condition: service_healthy
+    networks:
+      - news-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Angular Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    environment:
+      NEWS_API_URL: http://news-fetcher:8081
+      VOTING_API_URL: http://voting-service:8082
+    depends_on:
+      news-fetcher:
+        condition: service_healthy
+      voting-service:
+        condition: service_healthy
+    networks:
+      - news-net
+
+volumes:
+  news_data:
+  vote_data:
+
+networks:
+  news-net:
+    driver: bridge
