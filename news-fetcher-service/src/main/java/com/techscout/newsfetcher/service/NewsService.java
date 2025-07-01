@@ -4,6 +4,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import com.rometools.rome.io.FeedException;
 import com.techscout.newsfetcher.entity.NewsItem;
 import com.techscout.newsfetcher.repository.NewsItemRepository;
 import org.slf4j.Logger;
@@ -14,10 +15,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -47,20 +54,32 @@ public class NewsService {
         try {
             logger.info("Fetching news from {} - {}", sourceName, rssUrl);
             
-            SyndFeedInput input = new SyndFeedInput();
-            SyndFeed feed = input.build(new XmlReader(new URL(rssUrl)));
-            
-            List<SyndEntry> entries = feed.getEntries();
-            int savedCount = 0;
-            
-            for (SyndEntry entry : entries) {
-                if (saveNewsItem(entry, sourceName)) {
-                    savedCount++;
-                }
-            }
-            
-            logger.info("Saved {} new items from {}", savedCount, sourceName);
-            
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(rssUrl))
+                    .build();
+            httpClient.sendAsync(httpRequest, BodyHandlers.ofInputStream())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(responseBody -> {
+                        SyndFeedInput input = new SyndFeedInput();
+                        try {
+                            SyndFeed feed = input.build(new XmlReader(responseBody));
+                            List<SyndEntry> entries = feed.getEntries();
+                            logger.info(entries.toString());
+                            int savedCount = 0;
+                            for (SyndEntry entry : entries) {
+                                if (saveNewsItem(entry, sourceName)) {
+                                    savedCount++;
+                                }
+                            }
+                            
+                            logger.info("Saved {} new items from {}", savedCount, sourceName);
+                        } catch (FeedException | IOException e) {
+                            logger.error("Error parsing RSS feed from {} - {}: {}", sourceName, rssUrl, e.getMessage(), e);
+                            throw new CompletionException(e);
+                        }
+
+                    });
         } catch (Exception e) {
             logger.error("Error fetching news from {} - {}: {}", sourceName, rssUrl, e.getMessage(), e);
         }
