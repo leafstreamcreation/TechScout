@@ -1,25 +1,17 @@
 # Use OpenJDK 21 base image
-FROM openjdk:21-jdk-slim
+FROM maven:3.9.10-eclipse-temurin-21-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
+# Copy pom.xml
 COPY pom.xml .
-
-# Make Maven wrapper executable
-RUN chmod +x ./mvnw
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline -B
 
 # Copy source code
 COPY src ./src
 
+RUN mvn -B -f pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean install -DskipTests
 
 # Expose port
 EXPOSE 8082

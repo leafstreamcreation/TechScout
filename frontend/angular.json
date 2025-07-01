@@ -21,7 +21,7 @@
             "outputPath": "dist/techscout-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [
+           "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "techscout-frontend:build:production"
+              "browserTarget": "techscout-frontend:build:production"
             },
             "development": {
-              "buildTarget": "techscout-frontend:build:development"
+              "browserTarget": "techscout-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

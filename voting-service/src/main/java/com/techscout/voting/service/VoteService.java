@@ -31,7 +31,7 @@ public class VoteService {
         
         if (existingVote.isPresent()) {
             // Update existing vote
-            Vote updatedVote = new Vote(existingVote.get().id(), newsItemId, value, userId);
+            Vote updatedVote = new Vote(existingVote.get().getId(), newsItemId, value, userId);
             logger.info("Updating vote for user {} on news item {}", userId, newsItemId);
             return voteRepository.save(updatedVote);
         } else {

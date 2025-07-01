@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NewsCardComponent } from '../news-card/news-card.component';
 import { NewsService } from '../../services/news.service';
 import { NewsItem } from '../../models/news.model';
+import _ from 'lodash';
 
 @Component({
   selector: 'app-news-list',
@@ -110,14 +111,16 @@ export class NewsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNews();
-  }
+}
 
-  loadNews(): void {
+loadNews(): void {
     this.isLoading.set(true);
     this.newsService.getLatestNews().subscribe({
-      next: (news) => {
-        this.newsItems.set(news);
-        this.isLoading.set(false);
+        next: (news) => {
+            console.log('News loaded:', news);
+            this.newsItems.set(news);
+            this.isLoading.set(false);
+            console.log("Blarg!", _.cloneDeep(this.newsItems()));
       },
       error: (error) => {
         console.error('Error loading news:', error);
