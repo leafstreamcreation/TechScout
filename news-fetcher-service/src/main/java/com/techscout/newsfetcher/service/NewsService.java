@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -118,7 +117,7 @@ public class NewsService {
     }
     
     public List<NewsItem> getLatestNews() {
-        Pageable pageable = PageRequest.of(0, 20, Sort.by("publish_date").descending());
+        Pageable pageable = PageRequest.of(0, 20);
         return newsItemRepository.findLatestNews(pageable);
     }
 }
