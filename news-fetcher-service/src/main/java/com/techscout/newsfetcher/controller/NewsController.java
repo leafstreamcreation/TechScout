@@ -11,6 +11,8 @@ import java.util.List;
 @RequestMapping("/news")
 @CrossOrigin(origins = "*")
 public class NewsController {
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NewsController.class);
     
     private final NewsService newsService;
     
@@ -22,6 +24,7 @@ public class NewsController {
     public ResponseEntity<List<NewsItem>> getLatestNews() {
         try {
             List<NewsItem> news = newsService.getLatestNews();
+            logger.info("Fetched news items: ", news);
             return ResponseEntity.ok(news);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
