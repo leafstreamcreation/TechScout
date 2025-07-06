@@ -24,7 +24,7 @@ public class NewsController {
     public ResponseEntity<List<NewsItem>> getLatestNews() {
         try {
             List<NewsItem> news = newsService.getLatestNews();
-            logger.info("Fetched news items: ", news);
+            logger.info("Fetched news items: {}", news);
             return ResponseEntity.ok(news);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
