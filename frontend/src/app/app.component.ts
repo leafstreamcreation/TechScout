@@ -13,8 +13,8 @@ import { NewsListComponent } from './components/news-list/news-list.component';
         <div class="container">
           <div class="header-content">
             <div>
-              <h1 class="logo">TechScout</h1>
-              <p class="subtitle">Your gateway to the latest tech news</p>
+              <h1 class="logo">Muninn</h1>
+              <p class="subtitle">Tech News Aggregator</p>
             </div>
           </div>
         </div>

@@ -31,4 +31,41 @@ public class NewsItem {
         this.sourceName = sourceName;
         this.publishDate = publishDate;
     }
+
+    @Override
+    public String toString() {
+        return "NewsItem{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", sourceUrl='" + sourceUrl + '\'' +
+                ", sourceName='" + sourceName + '\'' +
+                ", publishDate=" + publishDate +
+                '}';
+    }
+    
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public Instant getPublishDate() {
+        return publishDate;
+    }
 }

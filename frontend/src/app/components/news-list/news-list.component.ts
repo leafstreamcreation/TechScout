@@ -12,7 +12,7 @@ import { NewsItem } from '../../models/news.model';
   template: `
     <div class="news-list">
       <div class="news-list-header">
-        <h2>Latest Tech News</h2>
+        <h2>Latest</h2>
         <button 
           class="btn btn-primary refresh-btn"
           (click)="refreshNews()"

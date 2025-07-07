@@ -119,7 +119,6 @@ public class NewsService {
     public List<NewsItem> getLatestNews() {
         Pageable pageable = PageRequest.of(0, 20);
         List<NewsItem> newsItems = newsItemRepository.findLatestNews(pageable);
-        logger.info("Fetched news items: {}", newsItems);
         return newsItems;
     }
 }
