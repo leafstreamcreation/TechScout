@@ -1,12 +1,12 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VotingWidgetComponent } from '../voting-widget/voting-widget.component';
+// import { VotingWidgetComponent } from '../voting-widget/voting-widget.component';
 import { NewsItem } from '../../models/news.model';
 
 @Component({
   selector: 'app-news-card',
   standalone: true,
-  imports: [CommonModule, VotingWidgetComponent],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <article class="news-card card">
@@ -33,10 +33,6 @@ import { NewsItem } from '../../models/news.model';
             class="btn btn-secondary read-more">
             Read More →
           </a>
-          
-          <app-voting-widget 
-            [newsItemId]="newsItem.id">
-          </app-voting-widget>
         </div>
       </div>
     </article>
