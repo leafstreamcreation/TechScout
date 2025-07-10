@@ -92,6 +92,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: ./frontend/src
+          action: rebuild
+          ignore:
+            - ./frontend/node_modules/
     ports:
       - "4200:80"
     environment:
