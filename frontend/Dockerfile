@@ -1,5 +1,5 @@
 # Multi-stage build for Angular 16 app
-FROM node:18-alpine AS build
+FROM node:alpine AS build
 
 # Set working directory
 WORKDIR /app
@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
+RUN npm install -g @angular/cli
 RUN npm i
 
 # Copy source code
