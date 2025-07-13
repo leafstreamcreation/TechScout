@@ -11,7 +11,7 @@ export class NewsService {
   private readonly apiUrl = environment.newsApiUrl;
 
   constructor(private http: HttpClient) {}
-
+//wtf: WHAT THE FUCK
   getLatestNews(): Observable<NewsItem[]> {
     return this.http.get<NewsItem[]>(this.apiUrl).pipe(
       catchError(error => {
